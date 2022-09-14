@@ -1,0 +1,167 @@
+<!doctype html>
+<head>
+  <meta charset="utf-8">
+  <title>Markdown Live Editor</title>
+  <style>
+pre { background-color: #ccc; padding: .5rem; }
+
+code { color: orange; display:contents }
+p { margin: 0; line-height:1.2; margin-bottom:1rem; }
+
+h1, h2, h3, h4, h5, h6 { text-shadow: -1px -1px 0 rgba(0,0,0,0.3); }
+h1, h2, h3, h4, h5, h6 {
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+  line-height: 1.2;
+}
+ul, ol {
+  margin-top: 0;
+  margin-bottom: 1rem;
+}
+
+
+html,body{width:100%;height:100%;overflow:hidden;margin:0;font-family: -apple-system, BlinkMacSystemFont, "Segoe UI";}
+
+#o{overflow:auto;margin-left:-5px;padding-left:5px}
+
+#t,#o{width:50%;height:100%;display:inline-grid;vertical-align:top;border:1px solid;}
+
+#o,#t,html,body{
+box-sizing:border-box;-moz-box-sizing:border-box;
+}
+
+#t{resize:none;}
+</style>
+</head>
+<body>
+<textarea id=t oninput=o.innerHTML=parseMd(this.value)>
+# Header 1
+## Header 2
+### Header 3
+#### Header 4
+##### Header 5
+###### Header 6
+
+[asdf](https://google.com)
+
+```
+Multiline code
+asdfasdf
+asdfsafd
+```
+
+* bullet 1
+* bullet 2
+* bullet 3
+
+asdfasdfa3r2323 `asdf` asdfsdafd
+
+
+line 1 stuff asdfa
+
+line 2 stuff sdfadf
+
+1. bullet 1
+2. bullet 2
+3. bullet 3
+
+asdfd
+</textarea>
+<div id=o></div>
+<script>
+
+const parseBullets = str => {
+  let regex = new RegExp(/(\* [^\n]+\n)+/i);
+  let index = 0;
+  let result = str.match(regex);
+  while (result) {
+    str = str.replace(result[0], `\n${tag("ul", result[0].split(/\*/).map(a => a.trim()?tag("li", a.trim()):'').join(''))}`);
+    index = result.index + index + result[0].length;
+    result = str.substr(index).match(regex);
+  }
+  return str;
+};
+
+const parseNumBullets = str => {
+  let regex = new RegExp(/\d+\. ([^\n]+\n)+/i);
+  let index = 0;
+  let result = str.match(regex);
+  while (result) {
+    str = str.replace(result[0], `\n${tag('ol', result[0].split(/\d+\./).map(a => a.trim()?tag("li", a.trim()):'').join(''))}`);
+    index = result.index + index + result[0].length;
+    result = str.substr(index).match(regex);
+  }
+  return str;
+};
+
+const parseHeaders = str => {
+  let regex = new RegExp(/(#+)([^\n]+[\n])/i);
+  let index = 0;
+  let hNum = 1;
+  let result = str.match(regex);
+  while (result) {
+    hNum = Math.min(6, result[1].length);
+    str = str.replace(result[0], tag("h" + hNum, result[2]));
+    index = result.index + index + result[0].length;
+    result = str.substr(index).match(regex);
+  }
+  return str;
+};
+
+//Make sure to do this before `parseMultilineCode` because it uses ``` to make sure not to add <p> tags inside that area.
+const parseLineBreaks = str => str.split(/```/).map((a, i) => i % 2 ? a : a.split(/\n{2,}/i).map(b => b && tag("p", b)).join("")).join("```");
+
+const parseInlineCode = str => {
+  str = str.trim();
+  let regex = new RegExp(/`([^\n`]+)`/i);
+  let index = 0;
+  let result = str.match(regex);
+  while (result) {
+    str = str.replace(result[0], tag("code", result[1]));
+    index = result.index + index + result[0].length;
+    result = str.substr(index).match(regex);
+  }
+  return str;
+};
+
+const parseMultilineCode = str => {
+  let regex = new RegExp("\`\`\`([^(\`\`\`)]+)\`\`\`\n", 'i');
+  let index = 0;
+  let result = str.match(regex);
+  while (result) {
+    str = str.replace(result[0], tag('pre', result[1]));
+    index = result.index + index + result[0].length;
+    result = str.substr(index).match(regex);
+  }
+  return str;
+};
+
+const parseLinks = str => {
+  let regex = new RegExp(/\[([^"\]]*)\]\(([^"\)]+)\)/i);
+  let index = 0;
+  let result = str.match(regex);
+  while (result) {
+    str = str.replace(result[0], tag(`a href="${result[2]}"`, result[1]));
+    index = result.index + index + result[0].length;
+    result = str.substr(index).match(regex);
+  }
+  return str;
+};
+
+const tag = (tagName, str) => `<${tagName}>${str.trim()}</${tagName.split(" ")[0]}>`;
+
+const parseMd = text => 
+parseInlineCode(
+parseMultilineCode(
+parseLineBreaks(
+parseHeaders(
+parseBullets(
+parseNumBullets(
+parseLinks(
+  text.replace(/\r/g, '')
+)))))))
+;
+
+
+</script>
+</body>

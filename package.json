@@ -1,0 +1,11 @@
+{
+  "name": "md-editor",
+  "version": "1.0.0",
+  "description": "A minimal markdown editor.",
+  "scripts": {
+    "preinstall": "npm i serve concurrently opener -g",
+    "start": "concurrently \"serve src -p 3035\" \"opener http://localhost:3035\""
+  },
+  "author": "Lewis Nakao <lewdev@gmail.com>",
+  "license": "UNLICENSED"
+}

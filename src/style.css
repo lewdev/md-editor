@@ -1,0 +1,35 @@
+pre { background-color: #ccc; padding: .5rem; }
+
+code { color: orange; display:contents }
+p { margin: 0; line-height:1.2; margin-bottom:1rem; }
+
+h1, h2, h3, h4, h5, h6 {
+  text-shadow: -1px -1px 0 rgba(0,0,0,0.3);
+  margin-bottom: 0.5rem;
+  margin-top: 0.5rem;
+  font-weight: 500;
+  line-height: 1.2;
+}
+
+ul, ol {
+  margin-top: 0;
+  margin-bottom: 1rem;
+}
+
+blockquote {
+  margin-left: 1rem;
+  padding-left: 1rem;
+  border-left: 4px solid #ccc;
+}
+
+html,body{width:100%;height:100%;overflow:hidden;margin:0;font-family: -apple-system, BlinkMacSystemFont, "Segoe UI";}
+
+#o{overflow:auto;margin-left:-5px;padding-left:5px}
+
+#t,#o{width:50%;height:100%;display:inline-grid;vertical-align:top;border:1px solid;}
+
+#o,#t,html,body{
+box-sizing:border-box;-moz-box-sizing:border-box;
+}
+
+#t{resize:none;}
